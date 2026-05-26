@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- [需替换] 浏览器标签页标题 -->
+  <title>DecMem: Towards Minute-Long Consistent World Generation with Decoupled Memory</title>
+  <meta name="description" content="DecMem — a decoupled memory architecture for minute-level controllable world generation with high fidelity and spatio-temporal consistency.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <!-- [需替换] favicon：将 logo 放到 assets/ 后改路径 -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ==================== Hero / Intro ==================== -->
+  <section id="intro">
+    <!-- [需替换] 首屏背景视频：默认 assets/videos/teaser.mp4，可换为你的 teaser -->
+    <!-- <video autoplay muted loop playsinline poster="assets/title.png">
+      <source src="assets/videos/teaser.mp4" type="video/mp4">
+    </video> -->
+
+    <div class="content">
+      <!-- [需替换] 主标题 -->
+      <h1>DecMem</h1>
+      <!-- [需替换] 副标题 -->
+      <h2>Towards Minute-Long Consistent World Generation with Decoupled Memory</h2>
+
+      <p class="authors">
+        Zhenhao Yang<sup>2</sup>,
+        Xiaoshi Wu<sup>2</sup>,
+        Zhengyao Lv<sup>1</sup>,
+        Xiaoyu Shi<sup>2†</sup>,
+        Xintao Wang<sup>2</sup>,
+        Pengfei Wan<sup>2</sup>,
+        Kun Gai<sup>2</sup>,
+        Kwan-Yee K. Wong<sup>1†</sup>
+      </p>
+      <p class="affiliations">
+        <sup>1</sup> The University of Hong Kong &nbsp;
+        <sup>2</sup> Kling Team, Kuaishou Technology
+      </p>
+      <p class="footnote">
+        <sup>†</sup>Corresponding Author
+      </p>
+
+      <div class="button-row">
+        <!-- [需替换] 论文 / 代码 / Demo / HF 等外链 href -->
+        <a class="button" href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank" rel="noopener">Paper</a>
+        <a class="button" href="https://github.com/YOUR_ORG/YOUR_REPO" target="_blank" rel="noopener">Code</a>
+        <!-- [可选] 增加更多按钮，复制上面 <a class="button"> 即可 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Teaser Video ==================== -->
+  <!-- <section id="teaser">
+    <div class="teaser-video-wrap">
+      <video controls autoplay muted loop playsinline preload="auto"
+        poster="assets/title.png"
+        src="assets/demo_video.mp4"></video>
+    </div>
+  </section> -->
+
+  <!-- ==================== Abstract ==================== -->
+  <section id="abstract">
+    <h2 class="title">Abstract</h2>
+    <div class="description-justify">
+      <p>
+        Recent advances in video generative models have promoted rapid progress in controllable world models. However, maintaining fine-grained spatio-temporal consistency under long-horizon reasoning remains a key challenge. In this work, we move beyond explicit 3D memory and coarse frame-level implicit modeling, and propose a fine-grained, learnable, and scalable memory for consistent world generation.
+      </p>
+      <p>
+        We first identify two fundamental limitations of naïve learnable memory architectures in long-horizon extrapolation, namely computational inefficiency and attention dispersion. Through a systematic analysis of attention dispersion, we propose <strong>DecMem</strong>, a decoupled memory architecture that employs <strong>Sparse Global Memory</strong> for efficient fine-grained access to global history and <strong>Anchored Local Memory</strong> for stable and high-quality extrapolation.
+      </p>
+      <p>
+        Extensive experiments demonstrate that DecMem significantly outperforms current state-of-the-art methods. By ensuring precise and efficient long-term memory and achieving superior extrapolation capabilities, DecMem enables minute-level controllable long video generation with high fidelity and consistency.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== Motivation ==================== -->
+  <section id="motivation">
+    <h2 class="title">Motivation</h2>
+    <div class="overview-block">
+      <img src="assets/introv5.png" alt="Figure 1: Motivation">
+      <p class="overview-lead"><strong>Overview of DecMem motivation.</strong></p>
+      <p class="overview-item">
+        <strong>(a) Quality and Consistency:</strong>
+        Visual quality and spatio-temporal consistency of different long-horizon extrapolation methods (memory bank initialized with 221 frames). Prior methods fail to jointly preserve fidelity and consistency, while ours breaks this trade-off and sustains fine-grained memory under long rollouts.
+      </p>
+      <p class="overview-item">
+        <strong>(b) Computational Efficiency:</strong>
+        Generation latency of our method and naïve Dense Attention (memory bank initialized with 221 frames). Our sparse block retrieval substantially reduces cost without sacrificing quality.
+      </p>
+      <p class="overview-item">
+        <strong>(c) Learnable Block Retrieval:</strong>
+        Comparison of our learnable block retrieval against FOV-based frame retrieval (e.g., WorldMem).
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== Method ==================== -->
+  <section id="method">
+    <h2 class="title">Method</h2>
+    <div class="overview-block">
+      <img src="assets/pipeline_v3.png" alt="Figure 4: DecMem pipeline">
+      <p class="overview-lead"><strong>Overview of DecMem architecture.</strong></p>
+      <p class="overview-item">
+        <strong>(a) Sparse Global Memory (SGM):</strong>
+        Combines a block-level sparse retrieval module and a context-aware attention module for long-term memory fine-grained retrieval in an end-to-end manner, enabling efficient access to global history with bounded cost.
+      </p>
+      <p class="overview-item">
+        <strong>(b) Anchored Local Memory (ALM):</strong>
+        Keeps short-term transition smooth and supports stable, high-quality extrapolation by anchoring generation on recent local context.
+      </p>
+      <p class="overview-item">
+        <strong>(c) Decoupled Pipeline:</strong>
+        DecMem comprises decoupled memory for long-term consistency and extrapolation generalization while keeping computational cost low. For clearer visualization, we display 3 frame latents as key &amp; value and the last frame indexed by <em>t</em> as query; each frame contains 2 blocks with 2 tokens per block.
+      </p>
+      <p class="overview-item">
+        For clearer visualization, we display 3 frame latents as key &amp; value and the last frame indexed by <em>t</em> as query; each frame contains 2 blocks with 2 tokens per block.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== Comparison ==================== -->
+  <section id="comparison">
+    <h2 class="title">Comparison</h2>
+    <!-- [需替换] 在此处写一行说明文字 -->
+    <p class="section-desc"> Qualitative comparison with state-of-the-art methods (We use 221 frames for memory bank initialization.).</p>
+
+    <div class="video-gallery">
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/videos/016.mp4"></video>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/videos/056.mp4"></video>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/videos/067.mp4"></video>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/videos/071.mp4"></video>
+        </div>
+      </div>
+    </div>
+
+    <!--
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th rowspan="2">Model</th>
+          <th colspan="5" class="sub-header vbench-divider">Metric Group A</th>
+          <th colspan="4" class="sub-header">Metric Group B</th>
+        </tr>
+        <tr>
+          <th class="vbench-divider">Col A↑</th>
+          <th>Col B↑</th>
+          <th>Col C↑</th>
+          <th>Col D↑</th>
+          <th class="vbench-divider">Avg.↑</th>
+          <th>Mem.↓</th>
+          <th>Fid.↓</th>
+          <th>Act.↓</th>
+          <th>ELO↑</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Baseline-A</td>
+          <td class="vbench-divider">0.0000</td>
+          <td>0.0000</td>
+          <td>0.0000</td>
+          <td>0.0000</td>
+          <td class="vbench-divider">0.0000</td>
+          <td>0.00</td>
+          <td>0.00</td>
+          <td>0.00</td>
+          <td>0000</td>
+        </tr>
+        <tr>
+          <td>Baseline-B</td>
+          <td class="vbench-divider">0.0000</td>
+          <td>0.0000</td>
+          <td class="best">0.0000</td>
+          <td>0.0000</td>
+          <td class="vbench-divider">0.0000</td>
+          <td>0.00</td>
+          <td>0.00</td>
+          <td class="best">0.00</td>
+          <td>0000</td>
+        </tr>
+        <tr class="ours-row">
+          <td>Your-Method (Ours)</td>
+          <td class="vbench-divider">0.0000</td>
+          <td class="best">0.0000</td>
+          <td>0.0000</td>
+          <td class="second">0.0000</td>
+          <td class="vbench-divider">0.0000</td>
+          <td class="best">0.00</td>
+          <td class="best">0.00</td>
+          <td>0.00</td>
+          <td class="best">0000</td>
+        </tr>
+      </tbody>
+    </table>
+    -->
+  </section>
+
+  <!-- ==================== Long World Rollout ==================== -->
+  <section id="gallery">
+    <h2 class="title">Long World Simulation</h2>
+    <!-- [需替换] 在此处写一行说明文字 -->
+    <p class="section-desc">Minute-long video generation results with 221 frames for memory bank initialization. The left side shows the ground truth (GT). On the right side, the frames highlighted with red boxes are the predicted frames, while the frames without red boxes are the memory frames. .</p>
+
+    <div class="video-gallery">
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/long_video/028.mp4"></video>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/long_video/055.mp4"></video>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/long_video/032.mp4"></video>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/long_video/108.mp4"></video>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/long_video/141.mp4"></video>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-wrap">
+          <video controls muted loop playsinline preload="auto"
+            src="assets/long_video/133.mp4"></video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== BibTeX ==================== -->
+  <section class="bibtex-section" id="bibtex">
+    <h2 class="title">BibTeX</h2>
+    <!-- [需替换] 完整 citation -->
+    <pre class="bibtex-code">@article{your2026key,
+  title={Your Paper Title},
+  author={Author, One and Author, Two},
+  journal={arXiv preprint arXiv:XXXX.XXXXX},
+  year={2026}
+}</pre>
+  </section>
+
+  <footer>
+    <!-- [需替换] 页脚致谢 / 版权 -->
+    <p>This project page is inspired by the Hunyuan-GameCraft template.</p>
+    <p>© 2026 DecMem Team</p>
+  </footer>
+</body>
+</html>
