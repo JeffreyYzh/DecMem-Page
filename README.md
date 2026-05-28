@@ -24,7 +24,6 @@ opensource/projects/infinite-world/
 ### 1. 本地预览
 
 ```bash
-cd /m2v_intern/yangzhenhao/code/opensource/projects/infinite-world
 python3 -m http.server 8080
 # 浏览器打开 http://127.0.0.1:8080/
 ```
